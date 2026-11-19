@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✨ Dapur Manis Bakery & Cafe ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #FDFBF7; --dark: #2D1810; --gold: #C5A059; --pink: #F9EBEA; }
+- { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg); color: var(--dark); }
+        header { background: rgba(255,255,255,0.9); padding: 18px 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+        .logo span { color: var(--gold); }
+        .cart-btn { background: var(--dark); color: #fff; border: none; padding: 10px 20px; border-radius: 30px; cursor: pointer; font-weight: 600; }
+        .hero { text-align: center; padding: 60px 8%; background: radial-gradient(circle, var(--pink), var(--bg)); }
+        .hero h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; }
+        .hero h1 span { color: var(--gold); }
+        .categories { display: flex; justify-content: center; gap: 10px; padding: 20px; flex-wrap: wrap; }
+        .cat-btn { background: #fff; border: 1px solid var(--gold); padding: 8px 18px; border-radius: 20px; cursor: pointer; font-weight: 600; }
+        .cat-btn.active, .cat-btn:hover { background: var(--gold); color: #fff; }
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 25px; padding: 20px 8% 60px; max-width: 1300px; margin: 0 auto; }
+        .card { background: #fff; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .card-img { height: 180px; width: 100%; overflow: hidden; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
+        .card:hover .card-img img { transform: scale(1.05); }
+        .card-body { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .badge { background: var(--pink); color: #943126; font-size: 0.7rem; padding: 3px 10px; border-radius: 10px; align-self: flex-start; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+        .card-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 8px; }
+        .card-desc { font-size: 0.85rem; color: #7A6B63; margin-bottom: 15px; flex-grow: 1; }
+        .card-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #E5D5C5; padding-top: 12px; }
+        .price { font-weight: 700; font-size: 1.1rem; }
+        .add-btn { background: var(--dark); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        .add-btn:hover { background: var(--gold); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 200; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 20px; width: 90%; max-width: 420px; max-height: 85vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .close-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed #eee; font-size: 0.9rem; }
+        .qty-controls button { padding: 2px 8px; margin: 0 4px; cursor: pointer; background: #FDFBF7; border: 1px solid var(--gold); border-radius: 4px; font-weight: bold; }
+        .total-row { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; margin: 15px 0; background: var(--pink); padding: 10px; border-radius: 8px; }
+        .checkout-form input, .checkout-form textarea, .checkout-form select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+        .checkout-btn { width: 100%; background: var(--gold); color: #fff; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        footer { text-align: center; padding: 20px; background: var(--dark); color: #E5D5C5; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Dapur Manis <span>Bakery</span></div>
+        <button class="cart-btn" onclick="openCart()">🛍️ Keranjang (<span id="cart-count">0</span>)</button>
+    </header>
+
+    <section class="hero">
+        <h1>Manisnya Kebahagiaan di <span>Setiap Gigitan</span></h1>
+        <p>Kue dan roti segar pilihan dipanggang setiap hari.</p>
+    </section>
+
+    <div class="categories">
+        <button class="cat-btn active" onclick="filterProducts('Semua', this)">Semua Menu</button>
+        <button class="cat-btn" onclick="filterProducts('Pastry', this)">Pastry</button>
+        <button class="cat-btn" onclick="filterProducts('Slice Cake', this)">Slice Cake</button>
+        <button class="cat-btn" onclick="filterProducts('Roti Manis', this)">Roti Manis</button>
+    </div>
+
+    <main class="products" id="product-list"></main>
+
+    <div class="modal" id="cart-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Keranjang Belanja</h3>
+                <button class="close-btn" onclick="closeCart()">&times;</button>
+            </div>
+            <div id="cart-items"></div>
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cart-total">Rp 0</span>
+            </div>
+            <form class="checkout-form" onsubmit="checkout(event)">
+                <input type="text" id="cust-name" placeholder="Nama Pemesan" required>
+                <textarea id="cust-address" rows="2" placeholder="Alamat Pengiriman" required></textarea>
+                <select id="payment-method" required>
+                    <option value="" disabled selected>-- Pilih Metode Pembayaran --</option>
+                    <option value="Transfer BCA">Transfer BCA</option>
+                    <option value="Transfer Mandiri">Transfer Mandiri</option>
+                    <option value="E-Wallet (Dana/OVO)">E-Wallet (Dana/OVO)</option>
+                    <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat)</option>
+                </select>
+                <button type="submit" class="checkout-btn">Pesan Sekarang</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 Dapur Manis Bakery</footer>
+
+    <script>
+        const products = [
+            { id: 1, name: "Butter Croissant", category: "Pastry", price: 22000, image: "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=500&q=80", desc: "Pastry renyah beraroma butter di dalam." },
+            { id: 2, name: "Chocolate Fudge Cake", category: "Slice Cake", price: 35000, image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=500&q=80", desc: "Kue cokelat pekat dengan ganache lumer." },
+            { id: 3, name: "Roti Sobek Cokelat Keju", category: "Roti Manis", price: 28000, image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&q=80", desc: "Roti lembut isi cokelat dan taburan keju." },
+            { id: 4, name: "Strawberry Shortcake", category: "Slice Cake", price: 38000, image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=500&q=80", desc: "Sponge cake vanila dengan krim & stroberi." },
+            { id: 5, name: "Cinnamon Roll Glaze", category: "Pastry", price: 25000, image: "https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=500&q=80", desc: "Roti kayu manis harum siram gula vanila." },
+            { id: 6, name: "Donat Gula Salju", category: "Roti Manis", price: 18000, image: "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=500&q=80", desc: "Donat kentang empuk tabur gula halus." }
+        ];
+
+        let cart = [];
+
+        function renderProducts(filter = 'Semua') {
+            const list = document.getElementById('product-list');
+            list.innerHTML = '';
+            const filtered = filter === 'Semua' ? products : products.filter(p => p.category === filter);
+            filtered.forEach(p => {
+                list.innerHTML += `
+                    <div class="card">
+                        <div class="card-img"><img src="${p.image}" alt="${p.name}"></div>
+                        <div class="card-body">
+                            <span class="badge">${p.category}</span>
+                            <h3 class="card-title">${p.name}</h3>
+                            <p class="card-desc">${p.desc}</p>
+                            <div class="card-footer">
+                                <span class="price">Rp ${p.price.toLocaleString('id-ID')}</span>
+                                <button class="add-btn" onclick="addToCart(${p.id})">+ Keranjang</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function filterProducts(cat, btn) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts(cat);
+        }
+
+        function addToCart(id) {
+            const item = cart.find(c => c.id === id);
+            if (item) { item.qty++; } else { const p = products.find(prod => prod.id === id); cart.push({ ...p, qty: 1 }); }
+            updateCartUI();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            if (!item) return;
+            item.qty += delta;
+            if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-count').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:#888; padding:15px 0;">Keranjang kosong.</p>';
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <div><strong>${item.name}</strong><br><small>Rp ${item.price.toLocaleString('id-ID')}</small></div>
+                        <div class="qty-controls">
+                            <button onclick="changeQty(${item.id}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="changeQty(${item.id}, 1)">+</button>
+                        </div>
+                    </div>`).join('');
+            }
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('cart-total').innerText = 'Rp ' + total.toLocaleString('id-ID');
+        }
+
+        function openCart() { updateCartUI(); document.getElementById('cart-modal').style.display = 'flex'; }
+        function closeCart() { document.getElementById('cart-modal').style.display = 'none'; }
+
+        function checkout(e) {
+            e.preventDefault();
+            if (cart.length === 0) { alert('Pilih kue dulu!'); return; }
+            const name = document.getElementById('cust-name').value;
+            const payment = document.getElementById('payment-method').value;
+            const total = document.getElementById('cart-total').innerText;
+            alert(`Terima kasih, ${name}!\nTotal: ${total}\nPembayaran: ${payment}`);
+            cart = [];
+            updateCartUI();
+            closeCart();
+            e.target.reset();
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
